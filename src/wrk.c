@@ -4,6 +4,9 @@
 #include "script.h"
 #include "main.h"
 
+#include <unistd.h>
+#include <time.h>
+
 static struct config {
     uint64_t connections;
     uint64_t duration;
@@ -326,6 +329,10 @@ static int response_complete(http_parser *parser) {
     thread *thread = c->thread;
     uint64_t now = time_us();
     int status = parser->status_code;
+    const char *delayStr = getenv("REQUEST_DELAY");
+    if (delayStr != NULL) {
+        usleep(atoi(delayStr));
+    }
 
     thread->complete++;
     thread->requests++;
